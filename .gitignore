@@ -1,0 +1,61 @@
+# ==================== Goland/IDE相关 ====================
+# Goland的项目配置目录（核心忽略项）
+.idea/
+# IDE的临时文件
+*.iml
+*.iws
+*.ipr
+out/
+# VSCode（若混用）
+.vscode/
+*.code-workspace
+
+# ==================== Go项目相关 ====================
+# Go编译生成的二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+# Go编译的中间产物
+*.o
+*.a
+# Go模块缓存（go mod）
+vendor/
+# Go构建缓存
+go.sum
+# Go编译输出目录（自定义的bin/）
+bin/
+# Go测试/覆盖率相关文件
+*.test
+*.prof
+coverage.out
+# Go的临时缓存目录
+tmp/
+# Go mod下载的缓存（GOPATH下的pkg/mod，本地开发无需提交）
+pkg/mod/
+
+# ==================== 系统/通用临时文件 ====================
+# 操作系统临时文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+# 日志文件
+*.log
+# 压缩包
+*.zip
+*.tar.gz
+*.rar
+# 环境变量配置文件（本地配置，不提交）
+.env
+.env.local
+.env.*.local
+# 临时目录/文件
+tmp/
+temp/
+*.tmp
+*.bak
