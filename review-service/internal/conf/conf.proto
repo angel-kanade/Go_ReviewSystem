@@ -41,8 +41,15 @@ message Data {
   Redis redis = 2;
 }
 
-
 message Snowflake {
-  string startTime = 1;
-  int64 machineID = 2;
+  string start_time = 1;
+  int64 machine_id = 2;
+}
+
+message Registry {
+  message Consul {
+    string address = 1;
+    string scheme = 2;
+  }
+  Consul consul = 1;
 }

@@ -11,18 +11,28 @@ import (
 // is compatible with the kratos package it is being compiled against.
 const _ = errors.SupportPackageIsVersion1
 
-// 为某个枚举单独设置错误码
-func IsNeedLogin(err error) bool {
+func IsUnknownError(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ErrorReason_NEED_LOGIN.String() && e.Code == 401
+	return e.Reason == ReviewServiceErrorReason_UNKNOWN_ERROR.String() && e.Code == 500
 }
 
-// 为某个枚举单独设置错误码
-func ErrorNeedLogin(format string, args ...interface{}) *errors.Error {
-	return errors.New(401, ErrorReason_NEED_LOGIN.String(), fmt.Sprintf(format, args...))
+func ErrorUnknownError(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ReviewServiceErrorReason_UNKNOWN_ERROR.String(), fmt.Sprintf(format, args...))
+}
+
+func IsLoginFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ReviewServiceErrorReason_LOGIN_FAILED.String() && e.Code == 500
+}
+
+func ErrorLoginFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ReviewServiceErrorReason_LOGIN_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
 func IsDbFailed(err error) bool {
@@ -30,11 +40,11 @@ func IsDbFailed(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ErrorReason_DB_FAILED.String() && e.Code == 500
+	return e.Reason == ReviewServiceErrorReason_DB_FAILED.String() && e.Code == 500
 }
 
 func ErrorDbFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, ErrorReason_DB_FAILED.String(), fmt.Sprintf(format, args...))
+	return errors.New(500, ReviewServiceErrorReason_DB_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
 func IsOrderReviewed(err error) bool {
@@ -42,9 +52,9 @@ func IsOrderReviewed(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ErrorReason_ORDER_REVIEWED.String() && e.Code == 400
+	return e.Reason == ReviewServiceErrorReason_ORDER_REVIEWED.String() && e.Code == 400
 }
 
 func ErrorOrderReviewed(format string, args ...interface{}) *errors.Error {
-	return errors.New(400, ErrorReason_ORDER_REVIEWED.String(), fmt.Sprintf(format, args...))
+	return errors.New(400, ReviewServiceErrorReason_ORDER_REVIEWED.String(), fmt.Sprintf(format, args...))
 }

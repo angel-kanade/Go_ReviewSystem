@@ -108,7 +108,7 @@ type ReplyReviewRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ReplyReviewRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
+	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -212,7 +212,7 @@ type ReplyReviewReplyMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ReplyReviewReplyMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
+	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

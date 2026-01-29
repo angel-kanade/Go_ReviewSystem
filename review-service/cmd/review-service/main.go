@@ -3,15 +3,16 @@ package main
 import (
 	"flag"
 	"os"
-	"review-service/pkg/snowflake"
 
 	"review-service/internal/conf"
+	"review-service/pkg/snowflake"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
@@ -21,9 +22,9 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	Name string = "review-service"
 	// Version is the version of the compiled software.
-	Version string
+	Version string = "v1"
 	// flagconf is the config flag.
 	flagconf string
 
@@ -34,7 +35,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func newApp(logger log.Logger, r registry.Registrar, gs *grpc.Server, hs *http.Server) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -45,6 +46,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 			gs,
 			hs,
 		),
+		kratos.Registrar(r), // 服务注册
 	)
 }
 
@@ -74,14 +76,27 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+	// 解析registry.yaml中的配置
+	var rc conf.Registry
+	if err := c.Scan(&rc); err != nil {
+		panic(err)
+	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, logger)
 	if err != nil {
 		panic(err)
 	}
 	defer cleanup()
 
-	snowflake.Init(snowflake.Config{MachineID: bc.Snowflake.MachineID, StartTime: bc.Snowflake.StartTime})
+	// 初始化snowflake
+	// bc.Snowflake.StartTime
+	if err := snowflake.Init(
+		bc.Snowflake.StartTime,
+		bc.Snowflake.MachineId,
+	); err != nil {
+		panic(err)
+	}
+
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {
 		panic(err)

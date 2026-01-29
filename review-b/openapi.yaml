@@ -6,30 +6,11 @@ info:
     title: ""
     version: 0.0.1
 paths:
-    /helloworld/{name}:
-        get:
-            tags:
-                - Greeter
-            description: Sends a greeting
-            operationId: Greeter_SayHello
-            parameters:
-                - name: name
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
     /v1/appeal/audit:
         post:
             tags:
                 - Review
-            description: O端评价申诉审核
+            description: 评价申诉审核
             operationId: Review_AuditAppeal
             requestBody:
                 content:
@@ -48,7 +29,7 @@ paths:
         post:
             tags:
                 - Review
-            description: C端创建评价
+            description: 创建评价
             operationId: Review_CreateReview
             requestBody:
                 content:
@@ -67,7 +48,7 @@ paths:
         post:
             tags:
                 - Review
-            description: B端申诉评价
+            description: 申诉评价
             operationId: Review_AppealReview
             requestBody:
                 content:
@@ -86,7 +67,7 @@ paths:
         post:
             tags:
                 - Review
-            description: O端审核评价
+            description: 审核评价
             operationId: Review_AuditReview
             requestBody:
                 content:
@@ -105,7 +86,7 @@ paths:
         post:
             tags:
                 - Review
-            description: B端回复评价
+            description: 回复评价
             operationId: Review_ReplyReview
             requestBody:
                 content:
@@ -124,7 +105,7 @@ paths:
         get:
             tags:
                 - Review
-            description: C端获取评价详情
+            description: 获取评价详情
             operationId: Review_GetReview
             parameters:
                 - name: reviewID
@@ -143,7 +124,7 @@ paths:
         get:
             tags:
                 - Review
-            description: C端查看userID下所有评价
+            description: '--- c ---'
             operationId: Review_ListReviewByUserID
             parameters:
                 - name: userID
@@ -268,7 +249,7 @@ components:
             properties:
                 reviewID:
                     type: string
-            description: 创建评价的回复
+            description: 创建评价的响应
         api.review.v1.CreateReviewRequest:
             type: object
             properties:
@@ -293,7 +274,7 @@ components:
                     type: string
                 anonymous:
                     type: boolean
-            description: 创建评价的参数
+            description: 创建评价的请求参数
         api.review.v1.GetReviewReply:
             type: object
             properties:
@@ -307,7 +288,6 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/api.review.v1.ReviewInfo'
-            description: 用户评价列表的返回值
         api.review.v1.ReplyReviewReply:
             type: object
             properties:
@@ -355,17 +335,8 @@ components:
                 status:
                     type: integer
                     format: int32
-            description: 评价信息
-        helloworld.v1.HelloReply:
-            type: object
-            properties:
-                message:
-                    type: string
-            description: The response message containing the greetings
 tags:
     - name: Business
       description: 商家端服务
-    - name: Greeter
-      description: The greeting service definition.
     - name: Review
       description: 定义评价服务

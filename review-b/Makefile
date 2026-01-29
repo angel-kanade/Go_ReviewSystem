@@ -1,13 +1,15 @@
 GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
-VERSION=$(shell git describe --tags --always 2>/dev/null || echo "v0.0.0")
+VERSION=$(shell git describe --tags --always)
 
 ifeq ($(GOHOSTOS), windows)
-	# 直接指定正确的Git Bash路径（无需自动提取）
-	Git_Bash="D:/Git/bin/bash.exe"
-	# 查找Proto文件
-	INTERNAL_PROTO_FILES=$(shell $(Git_Bash) -c "find internal -name '*.proto' 2>/dev/null")
-	API_PROTO_FILES=$(shell $(Git_Bash) -c "find api -name '*.proto' 2>/dev/null")
+	#the `find.exe` is different from `find` in bash/shell.
+	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
+	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
+	#Git_Bash= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
+	Git_Bash=$(subst \,/,$(subst cmd\,bin\bash.exe,$(dir $(shell where git))))
+	INTERNAL_PROTO_FILES=$(shell $(Git_Bash) -c "find internal -name *.proto")
+	API_PROTO_FILES=$(shell $(Git_Bash) -c "find api -name *.proto")
 else
 	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 	API_PROTO_FILES=$(shell find api -name *.proto)
@@ -26,11 +28,6 @@ init:
 .PHONY: config
 # generate internal proto
 config:
-	# 【修改3】检查Proto文件是否存在，无文件则提示并正常退出（避免protoc报错）
-	@if [ -z "$(INTERNAL_PROTO_FILES)" ]; then \
-		echo "WARNING: No proto files found in internal directory, skip config generate."; \
-		exit 0; \
-	fi
 	protoc --proto_path=./internal \
 	       --proto_path=./third_party \
  	       --go_out=paths=source_relative:./internal \
@@ -39,11 +36,6 @@ config:
 .PHONY: api
 # generate api proto
 api:
-	# 【修改3】同config目标，增加文件检查
-	@if [ -z "$(API_PROTO_FILES)" ]; then \
-		echo "WARNING: No proto files found in api directory, skip api generate."; \
-		exit 0; \
-	fi
 	protoc --proto_path=./api \
 	       --proto_path=./third_party \
  	       --go_out=paths=source_relative:./api \
@@ -51,43 +43,32 @@ api:
  	       --go-grpc_out=paths=source_relative:./api \
 	       --openapi_out=fq_schema_naming=true,default_response=false:. \
 	       $(API_PROTO_FILES)
-
+.PHONY: validate
+# generate validate proto
+validate:
+	protoc --proto_path=. \
+           --proto_path=./third_party \
+           --go_out=paths=source_relative:. \
+           --validate_out=paths=source_relative,lang=go:. \
+           $(API_PROTO_FILES)
 .PHONY: build
 # build
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 
-
-
-.PHONY: validate
-# generate validate proto
-validate:
-	protoc --proto_path=. \
-		   --proto_path=./third_party \
-		   --go_out=paths=source_relative:. \
-		   --validate_out=paths=source_relative,lang=go:. \
-		   $(API_PROTO_FILES)
-
-.PHONY: errors
-errors:
-	protoc --proto_path=. \
-			 --proto_path=./third_party \
-			 --go_out=paths=source_relative:. \
-			 --go-errors_out=paths=source_relative:. \
-			 $(API_PROTO_FILES)
-
 .PHONY: generate
 # generate
 generate:
-	go generate ./...
 	go mod tidy
+	go get github.com/google/wire/cmd/wire@latest
+	go generate ./...
 
 .PHONY: all
 # generate all
 all:
-	make api
-	make config
-	make generate
+	make api;
+	make config;
+	make generate;
 
 # show help
 help:
@@ -107,4 +88,3 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
-
