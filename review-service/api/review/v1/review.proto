@@ -64,13 +64,14 @@ service Review {
 message CreateReviewRequest {
 	int64 userID = 1 [(validate.rules).int64 = {gt: 0}];
 	int64 orderID = 2 [(validate.rules).int64 = {gt: 0}];
-	int32 score = 3 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
-	int32 serviceScore = 4 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
-	int32 expressScore = 5 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
-	string content = 6 [(validate.rules).string = {min_len: 8, max_len: 255}];
-	string picInfo = 7;
-	string videoInfo = 8;
-	bool anonymous = 9;
+	int64 storeID = 3 [(validate.rules).int64 = {gt: 0}];
+	int32 score = 4 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
+	int32 serviceScore = 5 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
+	int32 expressScore = 6 [(validate.rules).int32 = {in: [1,2,3,4,5]}];
+	string content = 7 [(validate.rules).string = {min_len: 8, max_len: 255}];
+	string picInfo = 8;
+	string videoInfo = 9;
+	bool anonymous = 10;
 }
 // 创建评价的回复
 message CreateReviewReply {
@@ -142,25 +143,27 @@ message AppealReviewRequest{
 
 // 对评价进行申诉的返回值
 message AppealReviewReply{
-	int64 appealID = 1;
+    int64 appealID = 1;
 }
 
 // 对申诉进行审核的请求
 message AuditAppealRequest{
 	int64 appealID = 1 [(validate.rules).int64 = {gt: 0}];
-	int32 status = 2 [(validate.rules).int32 = {gt: 0}];
-	string opUser = 3 [(validate.rules).string = {min_len: 2}];
-	optional string opRemarks = 4;
+	int64 reviewID = 2 [(validate.rules).int64 = {gt: 0}];
+	int32 status = 3 [(validate.rules).int32 = {gt: 0}];
+	string opUser = 4 [(validate.rules).string = {min_len: 2}];
+	optional string opRemarks = 5;
 }
 
 // 对申诉进行审核的返回值
 message AuditAppealReply{
-	int64 appealID = 1;
 }
 
 // 用户评价列表的请求
 message ListReviewByUserIDRequest{
 	int64 userID = 1 [(validate.rules).int64 = {gt: 0}];
+	int32 page = 2 [(validate.rules).int32 = {gt: 0}];
+	int32 size = 3 [(validate.rules).int32 = {gt: 0}];
 }
 
 // 用户评价列表的返回值

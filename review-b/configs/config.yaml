@@ -1,14 +1,14 @@
 server:
   http:
-    addr: 0.0.0.0:8082
+    addr: 0.0.0.0:8002
     timeout: 1s
   grpc:
-    addr: 0.0.0.0:9092
+    addr: 0.0.0.0:9002
     timeout: 1s
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:13306)/review_system
+    source: root:root@tcp(127.0.0.1:13306)/review-system
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s

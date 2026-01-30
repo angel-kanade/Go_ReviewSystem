@@ -14,9 +14,19 @@ type ReplyParam struct {
 	VideoInfo string
 }
 
+type AppealParam struct {
+	ReviewID  int64
+	StoreID   int64
+	Reason    string
+	Content   string
+	PicInfo   string
+	VideoInfo string
+}
+
 // BusinessRepo is a Greater repo.
 type BusinessRepo interface {
 	Reply(context.Context, *ReplyParam) (int64, error)
+	Appeal(context.Context, *AppealParam) (int64, error)
 }
 
 // BusinessUsecase is a Greeter usecase.
@@ -35,4 +45,10 @@ func NewBusinessUsecase(repo BusinessRepo, logger log.Logger) *BusinessUsecase {
 func (uc *BusinessUsecase) CreateReply(ctx context.Context, param *ReplyParam) (int64, error) {
 	uc.log.WithContext(ctx).Infof("[biz] CreateReply param:%v", param)
 	return uc.repo.Reply(ctx, param)
+}
+
+// CreateAppeal 创建申诉
+func (uc *BusinessUsecase) CreateAppeal(ctx context.Context, param *AppealParam) (int64, error) {
+	uc.log.WithContext(ctx).Infof("[biz] CreateReply param:%v", param)
+	return uc.repo.Appeal(ctx, param)
 }
